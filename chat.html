@@ -1,19 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chat</title>
+  <title>Smart Companion</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="chat-box" id="chatBox"></div>
+<div class="app">
 
-<input type="file" id="pdfFile">
-<button onclick="uploadPDF()">Upload</button>
-<button onclick="summarize()">Summarize</button>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Smart Companion</h2>
+    <button>+ New Chat</button>
+  </div>
 
-<input id="input" placeholder="Ask...">
-<button onclick="send()">Send</button>
+  <!-- Main Chat -->
+  <div class="chat-section">
+
+    <div class="chat-header">
+      <h3>AI Tutor</h3>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+      <input id="input" placeholder="Message Smart Companion..." />
+      <button onclick="send()">➤</button>
+    </div>
+
+  </div>
+
+</div>
 
 <script src="chat.js"></script>
 </body>
