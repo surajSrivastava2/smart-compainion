@@ -6,17 +6,18 @@ const pdfParse = require("pdf-parse");
 require("dotenv").config();
 
 const OpenAI = require("openai");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔥 OpenAI setup
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// 📁 Multer setup (PDF upload)
+// 📁 Upload setup
 const storage = multer.diskStorage({
   destination: "uploads/",
   filename: (req, file, cb) => {
@@ -25,86 +26,91 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// 📌 Home route
-app.get("/", (req, res) => {
-  res.send("Smart Companion Backend Running 🚀");
+// 🧠 Fake DB
+let users = [];
+
+// 🔐 Signup
+app.post("/auth/signup", async (req, res) => {
+  const { email, password } = req.body;
+  const hashed = await bcrypt.hash(password, 10);
+  users.push({ email, password: hashed });
+  res.json({ message: "User created" });
+});
+
+// 🔐 Login
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email);
+  if (!user) return res.status(400).json({ error: "User not found" });
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(400).json({ error: "Wrong password" });
+
+  const token = jwt.sign({ email }, "secret123");
+  res.json({ token });
 });
 
 // 📤 Upload PDF
 app.post("/upload", upload.single("pdf"), (req, res) => {
-  res.json({
-    message: "File uploaded successfully",
-    filePath: req.file.path
-  });
+  res.json({ filePath: req.file.path });
 });
 
-// 📄 Extract text from PDF
+// 📄 Extract text
 async function extractText(filePath) {
   const dataBuffer = fs.readFileSync(filePath);
   const data = await pdfParse(dataBuffer);
   return data.text;
 }
 
-// 🤖 1. Summarize PDF
+// 🤖 Summarize
 app.post("/ai/summarize", async (req, res) => {
-  try {
-    const { filePath } = req.body;
+  const { filePath } = req.body;
+  const text = await extractText(filePath);
 
-    const text = await extractText(filePath);
+  const response = await openai.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [
+      { role: "system", content: "Summarize in bullet points" },
+      { role: "user", content: text }
+    ]
+  });
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: "Summarize the following text in bullet points" },
-        { role: "user", content: text }
-      ]
-    });
-
-    res.json({ summary: response.choices[0].message.content });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ summary: response.choices[0].message.content });
 });
 
-// 🧠 2. Quiz Generator
+// 🧠 Quiz
 app.post("/ai/quiz", async (req, res) => {
-  try {
-    const { text, difficulty } = req.body;
+  const { text, difficulty } = req.body;
 
-    const prompt = `Generate a ${difficulty} level quiz (MCQs with answers) from this:\n${text}`;
+  const response = await openai.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [
+      {
+        role: "user",
+        content: `Generate ${difficulty} MCQs with answers:\n${text}`
+      }
+    ]
+  });
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [{ role: "user", content: prompt }]
-    });
-
-    res.json({ quiz: response.choices[0].message.content });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ quiz: response.choices[0].message.content });
 });
 
-// 💬 3. AI Tutor
+// 💬 AI Chat
 app.post("/ai/ask", async (req, res) => {
-  try {
-    const { question } = req.body;
+  const { question } = req.body;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [{ role: "user", content: question }]
-    });
+  const response = await openai.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [{ role: "user", content: question }]
+  });
 
-    res.json({ answer: response.choices[0].message.content });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ answer: response.choices[0].message.content });
 });
 
-// 🚀 Start server
+app.get("/", (req, res) => {
+  res.send("Backend running 🚀");
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log("Server running"));
