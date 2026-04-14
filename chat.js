@@ -1,15 +1,21 @@
 const API = "https://smart-compainion.onrender.com";
 
-function addMsg(text) {
+function addMsg(text, type) {
   const div = document.createElement("div");
+  div.classList.add("msg", type);
   div.innerText = text;
   document.getElementById("chatBox").appendChild(div);
 }
 
+// Chat
 async function send() {
-  const text = document.getElementById("input").value;
+  const input = document.getElementById("input");
+  const text = input.value;
 
-  addMsg("You: " + text);
+  if (!text) return;
+
+  addMsg(text, "user");
+  input.value = "";
 
   const res = await fetch(API + "/ai/ask", {
     method: "POST",
@@ -18,30 +24,40 @@ async function send() {
   });
 
   const data = await res.json();
-  addMsg("AI: " + data.answer);
+
+  addMsg(data.answer, "bot");
 }
 
-async function uploadPDF() {
-  const file = document.getElementById("pdfFile").files[0];
-  const form = new FormData();
-  form.append("pdf", file);
-
-  const res = await fetch(API + "/upload", {
-    method: "POST",
-    body: form
-  });
-
-  const data = await res.json();
-  window.filePath = data.filePath;
+// Sections
+function showQuiz() {
+  document.getElementById("quizSection").classList.remove("hidden");
+  document.getElementById("chatSection").style.display = "none";
 }
 
-async function summarize() {
-  const res = await fetch(API + "/ai/summarize", {
+function showChat() {
+  document.getElementById("quizSection").classList.add("hidden");
+  document.getElementById("chatSection").style.display = "block";
+}
+
+// Quiz
+async function generateQuiz() {
+  const difficulty = document.getElementById("difficulty").value;
+
+  const res = await fetch(API + "/ai/quiz", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ filePath: window.filePath })
+    body: JSON.stringify({
+      text: "Generate quiz from basic concepts",
+      difficulty
+    })
   });
 
   const data = await res.json();
-  addMsg(data.summary);
+
+  document.getElementById("quizOutput").innerText = data.quiz;
+}
+
+// New Chat
+function newChat() {
+  document.getElementById("chatBox").innerHTML = "";
 }
