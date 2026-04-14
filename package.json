@@ -1,16 +1,18 @@
 {
-  "name": "smart-companion-backend",
+  "name": "smart-companion",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5",
-    "pdf-parse": "^1.1.1",
-    "openai": "^4.0.0"
+    "openai": "^4.0.0",
+    "pdf-parse": "^1.1.1"
   }
 }
