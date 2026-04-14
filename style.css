@@ -1,23 +1,157 @@
 body {
-  background: #0f0f0f;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #0d0d0d;
   color: white;
-  font-family: Arial;
 }
 
+/* Auth */
 .auth-container {
-  text-align: center;
-  margin-top: 100px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-input, button {
-  margin: 10px;
+.auth-box {
+  background: #171717;
+  padding: 30px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: 20px;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  background: #1f1f1f;
+  border: none;
+  color: white;
+  border-radius: 6px;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: #2a2a2a;
+  border: none;
+  color: white;
+  border-radius: 6px;
+}
+
+/* Layout */
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: #111;
+  padding: 20px;
+  border-right: 1px solid #222;
+}
+
+.new-chat {
+  width: 100%;
   padding: 10px;
+  background: #2a2a2a;
+  border: none;
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.menu p {
+  color: #aaa;
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 15px;
+  border-bottom: 1px solid #222;
+}
+
+/* Chat */
+.chat-box {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.msg {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  max-width: 60%;
+}
+
+.user {
+  background: #3a3a3a;
+  margin-left: auto;
+}
+
+.bot {
+  background: #1a1a1a;
+}
+
+/* Input */
+.input-area {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid #222;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px;
+  background: #1a1a1a;
+  border: none;
+  color: white;
+}
+
+.input-area button {
+  padding: 12px;
+  background: #2a2a2a;
+  border: none;
+  color: white;
+}
+
+/* Quiz */
+.quiz {
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.quiz select, .quiz button {
+  padding: 10px;
+  margin: 10px 5px;
   background: #2a2a2a;
   color: white;
   border: none;
+  border-radius: 6px;
 }
 
-.chat-box {
-  height: 300px;
-  overflow-y: scroll;
+#quizOutput {
+  margin-top: 20px;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 8px;
 }
